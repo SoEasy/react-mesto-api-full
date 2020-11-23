@@ -10,7 +10,6 @@ class UsersService {
       users.push({
         id: i.toString(),
         name: `user${i}`,
-        avatar: 'avatar',
         email: 'email'
       })
     });
