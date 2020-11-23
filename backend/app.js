@@ -7,10 +7,12 @@ const cookieParser = require('cookie-parser');
 const { PORT = 3000 } = process.env;
 const app = express();
 const mongoose = require('mongoose');
+const cors = require('cors');
 const authRoutes = require('./routes/auth.js');
 const userRoutes = require('./routes/users.js');
 const todoRoutes = require('./routes/todo.js');
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());

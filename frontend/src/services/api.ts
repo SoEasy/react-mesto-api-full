@@ -1,4 +1,4 @@
-import { User } from '../types';
+import { User, TodoItem } from '../types';
 
 class Api {
   private url: string;
@@ -17,38 +17,37 @@ class Api {
     }
   }
 
-  private _handleResponseError(err: { message: string }) {
-    return Promise.reject(err.message)
+  private _handleResponseError(err: string) {
+    return Promise.reject(err)
   }
 
   loadUsers(): Promise<Array<User>> {
-    return fetch(`${this.url}/users`, {
-      headers: this.headers,
-    })
+    return fetch(`${this.url}/users`)
       .then(
-        response => this._handleResponse<Array<User>>(response)
+        response => this._handleResponse<{users: Array<User>}>(response)
+      ).then(
+        ({ users }) => users
       ).catch(
         this._handleResponseError
       );
   }
 
-  getUserTodos(userId: User['id']) {
-    return fetch(`${this.url}/users/me`, {
-      headers: this.headers
-    })
-      .then(this._handleResponse)
+  getUserTodos(userId: User['id']): Promise<Array<TodoItem>> {
+    return fetch(`${this.url}/todo/${userId}`)
+      .then(response => this._handleResponse<{ todos: Array<TodoItem> }>(response))
+      .then(({ todos }) => todos)
       .catch(this._handleResponseError)
   }
 
-  register(email: string, password: string) {
-    return fetch(`${this.url}/signup`, {
+  register(email: string, password: string, name: string) {
+    return fetch(`${this.url}/auth/signUp`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: (
-        JSON.stringify({ email, password })
+        JSON.stringify({ email, password, name })
       )
     })
       .then(this._handleResponse)
@@ -56,7 +55,7 @@ class Api {
   }
 
   login(email: string, password: string) {
-    return fetch(`${this.url}/signin`,  {
+    return fetch(`${this.url}/auth/signIn`,  {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -70,24 +69,22 @@ class Api {
       .catch(this._handleResponseError)
   }
 
-  checkToken(token: string) {
-    return fetch(`${this.url}/users/me`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then(this._handleResponse)
+  logout(): Promise<void> {
+    return fetch(`${this.url}/auth/logout`)
+      .then(r => this._handleResponse<void>(r))
+      .catch(this._handleResponseError)
+  }
+
+  checkMe(): Promise<void> {
+    return fetch(`${this.url}/auth/me`)
+      .then(r => this._handleResponse<void>(r))
       .catch(this._handleResponseError)
   }
 }
 
 export const api = new Api(
-  'https://mesto.nomoreparties.co/v1/cohort-13',
+  'http://localhost:4000',
   {
-    'Content-Type': 'application/json',
-    authorization: '8ed74a04-ed04-4c07-90fb-2948fe98949f',
+    'Content-Type': 'application/json'
   }
 );

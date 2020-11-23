@@ -52,8 +52,13 @@ const meController = (req, res, next) => {
   return res.status(200).send({ id: req.user._id });
 }
 
+const logoutController = (req, res) => {
+  res.clearCookie('jwt').status(200).send({ success: true });
+}
+
 module.exports = {
   signInController,
   signUpController,
-  meController
+  meController,
+  logoutController
 };

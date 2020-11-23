@@ -1,5 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { defaultIfEmpty, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { api } from './api';
 import { TodoItem, User } from '../types';
 
 type TUserTodos = {
@@ -33,16 +34,18 @@ class TodoService {
     };
     this.store$.next(this.store);
 
-    setTimeout(() => {
-      this.store = {
-        ...this.store,
-        [userId]: {
-          status: 'done',
-          items: new Array(Math.round(Math.random() * 10)).fill(0).map((_, i) => ({ title: i.toString(), isDone: Math.random() > 0.5 }))
+    api.getUserTodos(userId).then(
+      (result) => {
+        this.store = {
+          ...this.store,
+          [userId]: {
+            status: 'done',
+            items: result
+          }
         }
+        this.store$.next(this.store);
       }
-      this.store$.next(this.store);
-    }, 2000);
+    )
   }
 }
 

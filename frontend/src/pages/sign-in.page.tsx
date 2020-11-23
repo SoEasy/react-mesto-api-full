@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import { PAGES } from '../const';
+import { sessionService } from '../services/session.service';
 import { useForm } from '../hooks/useForm';
 
 export const SignInPage: React.FC = () => {
+  const history = useHistory();
   const form = useForm<{ email: string, password: string }>({ email: '', password: '' });
+  const [error, setError] = useState<string | void>(void 0);
+
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    setError(void 0);
     e.preventDefault();
-    console.log(form.getData());
+    const { email, password } = form.getData();
+    sessionService.singIn(email, password).then(() => {
+      console.log('Success');
+      history.push(PAGES.HOME);
+    }).catch(err => {
+      console.error(err);
+      setError(err);
+    })
   }
 
   return <div>

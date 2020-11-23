@@ -1,4 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
+import { api } from './api';
 import { User } from '../types';
 
 class UsersService {
@@ -6,14 +7,9 @@ class UsersService {
 
   constructor() {
     const users: Array<User> = [];
-    new Array(50).fill(0).forEach((_, i) => {
-      users.push({
-        id: i.toString(),
-        name: `user${i}`,
-        email: 'email'
-      })
+    api.loadUsers().then((users: Array<User>) => {
+      this.users$.next(users);
     });
-    this.users$.next(users);
   }
 }
 

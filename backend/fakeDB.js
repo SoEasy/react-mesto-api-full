@@ -1,11 +1,11 @@
-const users = new Array(Math.round(Math.random()*20)).fill(0).map((_, i) => ({
+const users = new Array(Math.round(Math.random()*20) + 5).fill(0).map((_, i) => ({
   id: i,
   name: `User${i}`,
   email: `user${i}@mail.ru`
 }));
 
 const todos = users.reduce((acc, { id }) => {
-  acc[id] = new Array(Math.round(Math.random()* 10)).fill(0).map((_, i) => ({
+  acc[id] = new Array(Math.round(Math.random()* 10) + 4).fill(0).map((_, i) => ({
     title: `Task${i}`,
     isDone: Math.random() > 0.5
   }));
